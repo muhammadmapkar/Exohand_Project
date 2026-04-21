@@ -164,12 +164,6 @@ Open to improvements in:
 
 ---
 
-## License
-
-MIT License
-
----
-
 ## Author
 
 ExoHand Project – Assistive Robotics System
