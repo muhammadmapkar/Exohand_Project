@@ -1002,29 +1002,55 @@ body{font-family:var(--fb);background:var(--bg);color:var(--t1);font-size:14px;o
           <div class="pbar" style="height:9px"><div class="pfill" id="r-daily-progress-fill" style="width:44%"></div></div>
         </div>
 
-        <div class="rehab-control-grid">
-          <div class="card exercise-card">
-            <div class="exercise-head">
-              <div>
-                <div class="ct" style="margin-bottom:8px">Current Exercise Guidance</div>
-                <div class="exercise-name" id="r-exercise-name">Bottle Grip</div>
-                <div class="exercise-instruction" id="r-exercise-instruction">Place the hand around the bottle, slowly close the fingers, hold for 3 seconds, then release with control.</div>
-              </div>
-              <span class="chip cteal" id="r-exercise-target">Target: 3 reps</span>
-            </div>
-            <div class="rehab-note-box" id="r-coach-message">Try to activate your hand muscles before the ExoHand completes the movement. Stronger EMG effort will reduce device support.</div>
-            <div class="exercise-actions">
-              <button class="rehab-btn primary" onclick="startLiveRehab()"><i data-lucide="play" style="width:15px;height:15px"></i>Start Session</button>
-              <button class="rehab-btn warn" onclick="pauseLiveRehab()"><i data-lucide="pause" style="width:15px;height:15px"></i>Pause</button>
-              <button class="rehab-btn" onclick="completeRehabRep()"><i data-lucide="check" style="width:15px;height:15px"></i>Complete Rep</button>
-              <button class="rehab-btn danger" onclick="saveLiveRehabSession()"><i data-lucide="save" style="width:15px;height:15px"></i>Save Session</button>
+        <style>
+          .gesture-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:16px;margin-bottom:16px}
+          @media(max-width:900px){.gesture-grid{grid-template-columns:1fr}}
+          .gpred-name{font-family:var(--fd);font-weight:800;font-size:38px;letter-spacing:-0.01em;margin:6px 0 2px;color:#8A9BAC;text-transform:uppercase}
+          .gpred-conf{font-size:13px;color:var(--t2);margin-bottom:12px}
+          .gconf-track{height:10px;border-radius:6px;background:var(--bg3,rgba(255,255,255,0.06));overflow:hidden}
+          .gconf-fill{height:100%;width:0%;border-radius:6px;background:#018a91;transition:width .25s ease}
+          .gpred-status{font-size:12px;color:var(--t3);margin-top:10px}
+          .gstats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+          .gstat{background:var(--bg3,rgba(255,255,255,0.04));border-radius:12px;padding:12px 14px}
+          .gstat-l{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em}
+          .gstat-v{font-family:var(--fd);font-weight:700;font-size:20px;margin-top:3px;color:var(--t1)}
+          .gstat-v.status-ok{color:#4CAF86}.gstat-v.status-bad{color:#c0563b}
+          .ghist{display:flex;flex-direction:column;gap:6px;max-height:175px;overflow-y:auto}
+          .ghist-empty{font-size:12px;color:var(--t3);padding:8px 0}
+          .ghist-row{display:flex;align-items:center;gap:10px;font-size:13px;padding:6px 8px;border-radius:8px;background:var(--bg3,rgba(255,255,255,0.03))}
+          .ghist-dot{width:9px;height:9px;border-radius:50%;flex:none}
+          .ghist-g{font-weight:600;color:var(--t1);flex:1}
+          .ghist-c{color:var(--t2);font-variant-numeric:tabular-nums}
+          .ghist-t{color:var(--t3);font-size:11px;font-variant-numeric:tabular-nums}
+        </style>
+        <div class="gesture-grid">
+          <div class="card">
+            <div class="ch"><div class="ct">Predicted Gesture</div><span class="chip cmuted" id="g-source-chip">EMG-driven</span></div>
+            <div class="gpred-name" id="g-gesture">WAITING</div>
+            <div class="gpred-conf" id="g-confidence-text">—</div>
+            <div class="gconf-track"><div class="gconf-fill" id="g-confidence-bar"></div></div>
+            <div class="gpred-status" id="g-status">Waiting for signal…</div>
+          </div>
+
+          <div class="card">
+            <div class="ch"><div class="ct">Live EMG Signal</div><span class="chip cmuted" id="rehab-emg-source-chip">Patient source</span></div>
+            <div class="rehab-chart-wrap"><canvas id="rehab-chart"></canvas></div>
+          </div>
+
+          <div class="card">
+            <div class="ch"><div class="ct">Signal Statistics</div></div>
+            <div class="gstats-grid">
+              <div class="gstat"><div class="gstat-l">Latest EMG</div><div class="gstat-v" id="g-stat-emg">—</div></div>
+              <div class="gstat"><div class="gstat-l">Prediction</div><div class="gstat-v" id="g-stat-prediction">—</div></div>
+              <div class="gstat"><div class="gstat-l">Confidence</div><div class="gstat-v" id="g-stat-confidence">—</div></div>
+              <div class="gstat"><div class="gstat-l">Window</div><div class="gstat-v" id="g-stat-window">0 / 30</div></div>
+              <div class="gstat" style="grid-column:1/-1"><div class="gstat-l">Status</div><div class="gstat-v status-bad" id="g-stat-status">Idle</div></div>
             </div>
           </div>
 
           <div class="card">
-            <div class="ch"><div class="ct">Live EMG Waveform — Rehab View</div><span class="chip cmuted" id="rehab-emg-source-chip">Patient source</span></div>
-            <div class="rehab-chart-wrap"><canvas id="rehab-chart"></canvas></div>
-            <div class="ai-recommendation"><strong>AI Recommendation</strong><span id="r-ai-note">If today’s bottle grip is completed with low fatigue, increase bottle grip target from 3 to 5 reps next week and reduce motor assistance slightly.</span></div>
+            <div class="ch"><div class="ct">Gesture History</div></div>
+            <div class="ghist" id="g-history"><div class="ghist-empty">No predictions recorded yet</div></div>
           </div>
         </div>
 
@@ -1941,12 +1967,35 @@ function rehabQualityLabel(score){
 function rehabGoalDoneTotal(){ return Object.values(liveRehabGoals).reduce((a,g)=>a+(Number(g.done)||0),0); }
 function rehabGoalTargetTotal(){ return Object.values(liveRehabGoals).reduce((a,g)=>a+(Number(g.target)||0),0); }
 function rehabProgressPercent(){ return Math.min(100, Math.round((rehabGoalDoneTotal()/Math.max(1,rehabGoalTargetTotal()))*100)); }
+// Goal progress is PER-PATIENT. New patients start every goal at 0; Patient 1
+// keeps its demo numbers. Loaded on patient change, persisted on each rep.
+let goalsPatientId=null;
+const DEMO_GOAL_DONE={ open:6, bottle:1, hold:0 };
+function syncGoalsForPatient(){
+  if(goalsPatientId===currentPatientId) return;   // already loaded for this patient
+  goalsPatientId=currentPatientId;
+  const p=patientProfiles[currentPatientId]||{};
+  const saved=p.rehabGoals;
+  const defaults=(currentPatientId==='patient1')?DEMO_GOAL_DONE:{open:0,bottle:0,hold:0};
+  ['open','bottle','hold'].forEach(k=>{
+    if(liveRehabGoals[k]) liveRehabGoals[k].done = saved ? (Number(saved[k])||0) : defaults[k];
+  });
+  S.reps=rehabGoalDoneTotal();
+  syncSessionRepsUI();
+}
+function persistGoals(){
+  const p=patientProfiles[currentPatientId];
+  if(!p) return;
+  p.rehabGoals={ open:liveRehabGoals.open.done, bottle:liveRehabGoals.bottle.done, hold:liveRehabGoals.hold.done };
+  savePatientsToStorage();
+}
 function selectRehabExercise(key){
   if(!liveRehabGoals[key]) return;
   liveRehabCurrent=key;
   initLiveRehab();
 }
 function initLiveRehab(){
+  syncGoalsForPatient();
   Object.entries(liveRehabGoals).forEach(([key,g])=>{
     const card=document.querySelector('.goal-card[data-goal="'+key+'"]');
     if(card){
@@ -1986,6 +2035,7 @@ function completeRehabRep(){
   if(!g) return;
   if(g.done < g.target) g.done += 1;
   S.reps = rehabGoalDoneTotal();
+  persistGoals();
   syncSessionRepsUI();
   initLiveRehab();
   setText('r-coach-message', g.done>=g.target ? g.name+' goal completed. Move to the next daily goal or save the session.' : 'Good effort. '+g.name+' completed: '+g.done+' / '+g.target+'.');
@@ -2105,6 +2155,69 @@ function renderRehabIdleState(){
   updateDot('r-dot-rest','warn');
   const ai=document.getElementById('r-ai-note');
   if(ai) ai.textContent='No live EMG detected. Connect the EMG32 over USB on the Dashboard to begin live monitoring for this patient.';
+}
+// ─── Predicted-gesture / signal-stats / history (self-contained) ─────────
+// Derives a gesture + confidence from the EMG already flowing (CSV demo for
+// Patient 1, live USB serial for others). Rule-based, not the RF model.
+const GST = { fill:0, hist:[], last:'', votes:[] };
+const GESTURE_META = {
+  'Rest':{color:'#8A9BAC'}, 'Open Hand':{color:'#018a91'},
+  'Pinch':{color:'#d98324'}, 'Fist':{color:'#c0563b'}, 'WAITING':{color:'#8A9BAC'}
+};
+function emgToGesture(e){
+  if(e<12) return 'Rest';
+  if(e<35) return 'Open Hand';
+  if(e<60) return 'Pinch';
+  return 'Fist';
+}
+function renderGestureHistory(){
+  const box=document.getElementById('g-history'); if(!box) return;
+  if(!GST.hist.length){ box.innerHTML='<div class="ghist-empty">No predictions recorded yet</div>'; return; }
+  box.innerHTML=GST.hist.map(h=>{
+    const col=(GESTURE_META[h.g]||GESTURE_META.WAITING).color;
+    return `<div class="ghist-row"><span class="ghist-dot" style="background:${col}"></span><span class="ghist-g">${h.g}</span><span class="ghist-c">${h.conf}%</span><span class="ghist-t">${h.t}</span></div>`;
+  }).join('');
+}
+function updateGesturePanels(e, label){
+  const liveHW=usesHardwarePatient();
+  GST.fill=Math.min(30, GST.fill+1);
+  setText('g-stat-window', GST.fill+' / 30');
+  const gn=document.getElementById('g-gesture');
+
+  if(liveHW && !hardwareFresh()){
+    if(gn){ gn.textContent='WAITING'; gn.style.color=GESTURE_META.WAITING.color; }
+    setText('g-confidence-text','—'); setWidth('g-confidence-bar','0%');
+    setText('g-status','Disconnected — connect the EMG sensor to read live gestures.');
+    setText('g-stat-emg','—'); setText('g-stat-prediction','—'); setText('g-stat-confidence','—');
+    setText('g-stat-status','Disconnected');
+    const sc=document.getElementById('g-stat-status'); if(sc) sc.className='gstat-v status-bad';
+    GST.last=''; GST.votes=[];
+    return;
+  }
+
+  const g=emgToGesture(e);
+  GST.votes.push(g); if(GST.votes.length>8) GST.votes.shift();
+  const same=GST.votes.filter(x=>x===g).length;
+  const conf=Math.max(45, Math.min(99, Math.round((same/GST.votes.length)*100)));
+  const col=(GESTURE_META[g]||GESTURE_META.WAITING).color;
+
+  if(gn){ gn.textContent=g; gn.style.color=col; }
+  setText('g-confidence-text', conf+'% confidence');
+  setWidth('g-confidence-bar', conf+'%');
+  const bar=document.getElementById('g-confidence-bar'); if(bar) bar.style.background=col;
+  setText('g-status', g==='Rest'?'Muscle at rest':'Active gesture detected');
+  setText('g-stat-emg', Math.round(e)+'%');
+  setText('g-stat-prediction', g);
+  setText('g-stat-confidence', conf+'%');
+  setText('g-stat-status', liveHW?(HARDWARE.source||'Live'):'Demo (CSV)');
+  const sc=document.getElementById('g-stat-status'); if(sc) sc.className='gstat-v status-ok';
+
+  if(g!==GST.last){
+    GST.last=g;
+    GST.hist.unshift({g, conf, t:new Date().toLocaleTimeString()});
+    if(GST.hist.length>8) GST.hist.pop();
+    renderGestureHistory();
+  }
 }
 function syncSessionRepsUI(){
   const reps = Math.max(0, Math.min(999, Math.round(Number(S.reps) || 0)));
@@ -2250,6 +2363,10 @@ if (!patientProfiles.patient1) {
   };
 }
 Object.values(patientProfiles).forEach(normalizePatient);
+// Migrate any legacy "New Patient" to a numbered name based on its position.
+Object.keys(patientProfiles).forEach((id,i)=>{
+  if(patientProfiles[id].name==='New Patient') patientProfiles[id].name='Patient '+(i+1);
+});
 if (!patientProfiles[currentPatientId]) currentPatientId = "patient1";
 
 function savePatientsToStorage() {
@@ -2261,7 +2378,7 @@ function addNewPatient() {
   const id = "patient" + Date.now();
   const record = defaultRecord();
   patientProfiles[id] = {
-    name: "New Patient",
+    name: "Patient " + (Object.keys(patientProfiles).length + 1),
     sessionTime: record.sessionTime,
     recoveryStage: "Early",
     performance: "Fair",
@@ -2272,6 +2389,8 @@ function addNewPatient() {
     sessionHistory: []
   };
   currentPatientId = id;
+  goalsPatientId = null;        // new patient starts every rehab goal at 0
+  syncGoalsForPatient();
   savePatientsToStorage();
   renderModeContent();
 }
@@ -2288,6 +2407,8 @@ function deleteCurrentPatient() {
 function switchPatient(patientId) {
   currentPatientId = patientId;
   emgRollingWindow = [];
+  goalsPatientId = null;        // force per-patient goals to reload (0 for new patients)
+  syncGoalsForPatient();
   savePatientsToStorage();
   renderModeContent();
   renderHistory();
@@ -3291,6 +3412,7 @@ function tick(){
   const intent = document.getElementById('intent-txt');
   if(intent) intent.textContent = (pt.label ? 'Flex sample' : 'Rest sample') + ' · RMS ' + pt.raw.toFixed(6) + ' · assist ' + ass + '%';
   updateLiveRehabTelemetry(e, pt.label, avgE, flex);
+  updateGesturePanels(e, pt.label);
   setText('d-emg', e + '%');
   setText('d-assist', ass + '%');
   setText('d-flex', flex + '%');
