@@ -3265,7 +3265,7 @@ function pushRehabChart(){
 // saw on the EMG32's Serial Plotter, in real time.
 const PLOTTER = {
   active:false,
-  win:600,                 // sliding window width (Arduino plotter ~500)
+  win:500,                 // sliding window width — matches Teensyduino Serial Plotter (500 points)
   channels:[],             // one number[] ring buffer per series
   labels:[],
   colors:['#018a91','#d98324','#4CAF86','#c0563b','#7b6cf6','#e0b020','#3aa0d0','#d05a9a'],
