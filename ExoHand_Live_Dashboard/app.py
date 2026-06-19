@@ -64,8 +64,8 @@ templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 # ---------------------------------------------------------------------------
 # Load saved model artefacts (DO NOT retrain)
 # ---------------------------------------------------------------------------
-MODEL_PATH  = "/Users/muhammadnazirahmedmapkar/Documents/ExoHand_RF_Model.joblib"
-SCALER_PATH = "/Users/muhammadnazirahmedmapkar/Documents/ExoHand_Scaler.joblib"
+MODEL_PATH  = os.path.join(PARENT_DIR, "ExoHand_RF_Model.joblib")
+SCALER_PATH = os.path.join(PARENT_DIR, "ExoHand_Scaler.joblib")
 
 
 def _load_artefact(path: str, description: str):
