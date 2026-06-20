@@ -1971,6 +1971,9 @@ function normalizeHardwarePacket(packet){
     try { raw = JSON.parse(line); }
     catch(err){
       const parts=line.split(',').map(x=>x.trim());
+      if(parts.length === 1 && isNaN(parts[0])){
+        return null;
+      }
       raw = { emgPercent: parts[0], label: parts[1], battery: parts[2], assistLevel: parts[3] };
       if(parts.length >= 12){
         raw.motors = [
@@ -1981,6 +1984,13 @@ function normalizeHardwarePacket(packet){
         ];
       }
     }
+  }
+  if (typeof raw === 'number') {
+    const rawMax = Math.max(1, safeNum(HARDWARE.rawMax, 1023));
+    raw = {
+      emgRaw: raw,
+      emgPercent: Math.round((raw / rawMax) * 100)
+    };
   }
   if(!raw || typeof raw !== 'object') return null;
   if(Array.isArray(raw.v)) return normalizeEsp32HttpPacket(raw);
