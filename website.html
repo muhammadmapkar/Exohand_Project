@@ -992,8 +992,8 @@ html.lenis { height: auto; }
 
       <!-- Layer 3: Product Canvas -->
       <div style="position: absolute; z-index: 3; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; pointer-events: none;">
-        <!-- mix-blend-mode removed since frames are now transparent PNGs, aspect ratio fixed to 1280x720 -->
-        <canvas id="hero-scroll-canvas" width="1280" height="720" style="width: 100%; height: auto; filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));"></canvas>
+        <!-- Scroll-scrubbed product demo video (aspect ratio 1280x720) -->
+        <video id="hero-scroll-video" src="exohand_demo.mp4" muted playsinline preload="auto" width="1280" height="720" style="width: 100%; height: auto; filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));"></video>
       </div>
 
       <!-- Layer 4: Foreground UI (Only Open Live Dashboard) -->
@@ -4164,28 +4164,28 @@ document.addEventListener("DOMContentLoaded", () => {
     revealElements.forEach(el => revealObserver.observe(el));
 
 
-    const canvas = document.getElementById('hero-scroll-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    
-    // We extracted 149 frames
-    const frameCount = 149;
-    // Update to load .png instead of .jpg
-    const currentFrame = index => `frames/frame_${index.toString().padStart(4, '0')}.jpg`;
-    
-    const images = [];
-    
-    for (let i = 1; i <= frameCount; i++) {
-        const img = new Image();
-        img.src = currentFrame(i);
-        images.push(img);
-        if (i === 1) {
-            img.onload = () => {
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            };
+    const heroVideo = document.getElementById('hero-scroll-video');
+    if (!heroVideo) return;
+
+    // Scroll position scrubs through the demo video. We track a target time
+    // and ease the actual currentTime toward it for smooth seeking.
+    let heroDuration = 0;
+    let heroTargetTime = 0;
+    heroVideo.addEventListener('loadedmetadata', () => {
+        heroDuration = heroVideo.duration || 0;
+    });
+    function scrubLoop() {
+        if (heroDuration > 0) {
+            const cur = heroVideo.currentTime;
+            const diff = heroTargetTime - cur;
+            if (Math.abs(diff) > 0.01) {
+                heroVideo.currentTime = cur + diff * 0.25;
+            }
         }
+        requestAnimationFrame(scrubLoop);
     }
-    
+    requestAnimationFrame(scrubLoop);
+
     const strandsRoot = document.getElementById('strands-root');
     const text1 = document.getElementById('text-seq-1');
     const text2 = document.getElementById('text-seq-2');
@@ -4212,20 +4212,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const scrollTop = Math.max(0, -rect.top); 
         const scrollFraction = Math.min(Math.max(scrollTop / scrollRange, 0), 1);
         
-        // Product Forms (0 to 1)
-        const frameIndex = Math.min(
-            frameCount - 1,
-            Math.floor(scrollFraction * frameCount)
-        );
-        
-        if (images[frameIndex] && images[frameIndex].complete) {
-            requestAnimationFrame(() => {
-                // Clear the canvas because PNGs have transparency
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(images[frameIndex], 0, 0, canvas.width, canvas.height);
-            });
+        // Product Forms (0 to 1): scrub the demo video by scroll position.
+        if (heroDuration > 0) {
+            // Keep just under the full duration to avoid stalling on the last frame.
+            heroTargetTime = scrollFraction * Math.max(0, heroDuration - 0.05);
         }
-        
+
         // Text Sequences (0 to 0.85)
         // Text 1: 0.0 to 0.35
         const t1_prog = Math.max(0, Math.min((scrollFraction - 0.0) / 0.35, 1));
