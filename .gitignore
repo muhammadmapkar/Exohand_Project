@@ -1,20 +1,6 @@
-# Python
+.DS_Store
 __pycache__/
 *.pyc
-*.pyo
-*.egg-info/
-dist/
-build/
-.eggs/
-
-# macOS
-.DS_Store
-
-# IDE / Editor
+.vercel/
 .claude/
-.vscode/
-.idea/
-
-# Virtual environments
-venv/
-.env/
+*.env
