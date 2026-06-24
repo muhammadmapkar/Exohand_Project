@@ -1,0 +1,17 @@
+.title KiCad schematic
+U2 __U2
+C1 VBAT Net-_C1-Pad2_ 0.1u
+R1 __R1
+Servo3 __Servo3
+Servo2 __Servo2
+Servo5 __Servo5
+Servo4 __Servo4
+Servo1 __Servo1
+R2 __R2
+JBAT1 __JBAT1
+U3 __U3
+J1 __J1
+J3 __J3
+J2 __J2
+U4 __U4
+.end
