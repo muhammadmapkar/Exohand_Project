@@ -1,0 +1,19 @@
+# Key Decisions
+
+**Random Forest over a neural network for gesture classification.** The classifier needed to run on a Teensy MCU with no OS and no heavy ML runtime. A trained Random Forest can be converted into plain C arrays (tree nodes, thresholds, leaf classes) and run as simple `if`/`else` comparisons — no matrix math, no floating-point-heavy inference engine. This is why `ExoHand_Teensy.ino` runs inference as a hard-coded tree-walk (`predictTree` / `classify`) instead of calling out to a model file at runtime.
+
+**Move from single-servo RMS-threshold control to multi-class, multi-finger classification.** The earliest firmware (`Exohand_emg_with_filter.ino`, `exohand_emg_test.ino`) drove one servo based on whether RMS crossed a fixed threshold — workable for a binary "fist or not" gesture, not for isolating individual fingers. The later pipeline (10 hand-engineered features → Random Forest → 4 independent servo channels) was the response to that limitation, trading simplicity for the ability to recognize `rest`, `fist`, and individual-finger gestures (`pinky&ring`, `middle`, `index`, `thumb`).
+
+**Validate the filtering pipeline against a public benchmark before trusting team-collected data.** `Filter_signals.py` was first run against the NinaPro public EMG dataset (`datasets/benchmark`), not the team's own recordings. This let the bandpass/notch/RMS pipeline be checked against known-good reference data before relying on it for the team's own multi-person EMG dataset (`datasets/collected`), which has no independent ground truth to check against.
+
+**Debounce the classifier output rather than act on every window.** A single 30-sample window classification is noisy — `ExoHand_Teensy.ino` requires 4 consecutive windows to agree on the same gesture, plus a 150ms minimum hold time, before changing the servo targets. This trades a small amount of latency for fewer false gesture-switches.
+
+**Smooth servo motion instead of snapping to target angle.** Servos step 3° every 15ms toward their target rather than jumping immediately. This was likely a response to current-spike / mechanical-jolt issues noted as a known challenge in the project README (servo current spikes causing voltage drops).
+
+**PCA9685 I2C driver instead of driving servos directly from MCU PWM pins.** Four servos need four independent PWM channels; routing them through a dedicated I2C PWM driver frees up MCU pins and offloads PWM generation, at the cost of an extra I2C peripheral and address (`0x40`) to manage.
+
+**ESP32-C3 for wireless telemetry instead of adding WiFi logic to the Teensy.** The Teensy handles real-time sampling and inference; UART-bridging the result to a separate ESP32 keeps WiFi/networking code off the time-critical MCU. Only a servo-test sketch for the ESP32 side was found saved — the actual UART-relay/WiFi sketch wasn't located in the project files (see `docs/build-log.md`).
+
+**Custom PCB attempted, perfboard used for the actual build.** The KiCad project went through 20 dated backup snapshots over roughly five months (Nov 2025–Jun 2026), splitting logic and power planes per the design notes. Given the time spent, the team also produced perfboard assembly guides and wiring documentation in parallel — the perfboard appears to be how the hardware was actually built and wired, with the PCB design kept as the longer-term/parallel hardware effort rather than abandoned.
+
+**Keep a PC-side prediction path (`live_predict.py`, the FastAPI dashboard) alongside the on-device firmware.** Running inference on a laptop over serial is slower and requires a tethered connection, but it's much easier to debug and visualize than reading values off an embedded device — useful during development and for the live demo, even though the end goal is fully on-device classification.
