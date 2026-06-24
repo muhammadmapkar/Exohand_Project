@@ -1,7 +1,7 @@
 /*
   ExoHand ESP32 Bridge Firmware
   
-  This code runs on the ESP32. It acts as a bridge between the Teensy 4.1 (connected via UART)
+  This code runs on the ESP32. It acts as a bridge between the Teensy 4.0 (connected via UART)
   and the website dashboard (hosted on Vercel or run locally) using a WebSocket server.
   
   Connections:
@@ -59,7 +59,7 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
   
-  // Start Serial2 to Teensy 4.1 (Baud rate must match Teensy: 115200)
+  // Start Serial2 to Teensy 4.0 (Baud rate must match Teensy: 115200)
   Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2);
   
   Serial.println("\nExoHand ESP32 Bridge Starting...");

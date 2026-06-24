@@ -1,6 +1,6 @@
 # ExoHand Live EMG Gesture Dashboard
 
-Real-time browser-based dashboard that reads EMG signals from a **Teensy 4.1** via serial, classifies hand gestures using a pre-trained **Random Forest** model, and displays predictions live — no terminal interaction required.
+Real-time browser-based dashboard that reads EMG signals from a **Teensy 4.0** via serial, classifies hand gestures using a pre-trained **Random Forest** model, and displays predictions live — no terminal interaction required.
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue?logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?logo=fastapi)
@@ -53,7 +53,7 @@ This installs: `fastapi`, `uvicorn`, `websockets`, `pyserial`, `numpy`, `pandas`
 
 ## 3. Upload Teensy Arduino Code
 
-Flash the following code to your **Teensy 4.1** using the Arduino IDE:
+Flash the following code to your **Teensy 4.0** using the Arduino IDE:
 
 ```cpp
 const int EMG_PIN = A0;

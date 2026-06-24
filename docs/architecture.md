@@ -46,7 +46,7 @@ The on-device path (`ExoHand_Teensy.ino`) is the intended final form — the Tee
 
 ## Hardware stack
 
-- **MCU:** Teensy (4.0 per firmware header comments; the dashboard backend's comments say 4.1 — kept as found, not resolved here)
+- **MCU:** Teensy 4.0
 - **Servo driver:** PCA9685, I2C address `0x40`, 50 Hz PWM
 - **Servos:** MG996R (or equivalent), 4 channels — pinky&ring, middle, index, thumb
 - **EMG sensor:** SEN0240, single analog channel on Teensy `A0` in the current firmware (earlier firmware used 3 channels: flexor/extensor/extra)

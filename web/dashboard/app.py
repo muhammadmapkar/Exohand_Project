@@ -1,7 +1,7 @@
 """
 ExoHand Live EMG Gesture Dashboard — FastAPI Backend
 =====================================================
-Reads EMG data from a Teensy 4.1 via serial, runs real-time gesture
+Reads EMG data from a Teensy 4.0 via serial, runs real-time gesture
 classification with a pre-trained Random Forest model, and streams
 predictions to a browser dashboard over WebSocket.
 
@@ -543,7 +543,7 @@ async def get_ports():
 
         # Enrich description with vendor/product details if available
         if is_teensy:
-            board = "Teensy 4.1" if "4.1" in str(product or description) else "Teensy 4.1"
+            board = "Teensy 4.0"
             display_desc = f"{board} ({product or description or 'USB Serial'})"
         elif is_usb:
             display_desc = f"USB Device ({product or description or 'Serial'})"

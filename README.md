@@ -18,7 +18,7 @@ Full signal-flow diagram: `docs/architecture.md`.
 
 ## Hardware stack
 
-- Teensy (4.0 per the main firmware; 4.1 per the dashboard backend — both appear in the project files, kept as found)
+- Teensy 4.0 — main MCU for EMG sampling, feature extraction, and on-device RF inference
 - PCA9685 servo driver (I2C, 4 channels)
 - MG996R servos (or equivalent)
 - SEN0240 EMG sensor
