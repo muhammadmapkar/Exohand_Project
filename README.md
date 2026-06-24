@@ -22,7 +22,7 @@ Full signal-flow diagram: `docs/architecture.md`.
 - PCA9685 servo driver (I2C, 4 channels)
 - MG996R servos (or equivalent)
 - SEN0240 EMG sensor
-- ESP32-C3, for live telemetry/graph relay (servo-test sketch exists; the WiFi/UART relay sketch wasn't found saved)
+- ESP32-C3, for live telemetry/graph relay (`firmware/current/esp32_bridge.ino` — self-hosted WiFi AP + WebSocket server)
 
 ## Repo layout
 
@@ -45,6 +45,8 @@ Nothing failed or superseded was deleted — old firmware versions, every dated 
 **Signal processing / training:** `pip install -r signal-processing/requirements.txt`, then `signal-processing/ExoHand_EMG_Classifier_RF_V2.ipynb` to retrain, or `signal-processing/live_predict.py` to run live PC-side inference over serial.
 
 **Live dashboard:** `web/dashboard/app.py` (FastAPI). Install `web/dashboard/requirements.txt`, run with `uvicorn app:app`, open the browser page it serves. Includes a `/api/demo` mode that fakes EMG data if no hardware is connected.
+
+**Website:** `web/website.html` is the current main site (Live Rehab dashboard view, live EMG chart, camera-based sensor-placement assistant). `web/archive/ORVYNUpdated.html` is an earlier, less developed version.
 
 **Hardware:** schematics and PCB in `hardware/schematics/`, BOM in `hardware/bom/`, perfboard wiring/assembly in `hardware/perfboard/`.
 

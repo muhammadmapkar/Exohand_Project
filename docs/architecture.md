@@ -50,12 +50,12 @@ The on-device path (`ExoHand_Teensy.ino`) is the intended final form — the Tee
 - **Servo driver:** PCA9685, I2C address `0x40`, 50 Hz PWM
 - **Servos:** MG996R (or equivalent), 4 channels — pinky&ring, middle, index, thumb
 - **EMG sensor:** SEN0240, single analog channel on Teensy `A0` in the current firmware (earlier firmware used 3 channels: flexor/extensor/extra)
-- **Wireless telemetry:** ESP32-C3, intended to relay live EMG + gesture data over UART for a graph display. A servo-test sketch exists for the ESP32 side; no WiFi/UART-relay sketch was found in the saved files.
+- **Wireless telemetry:** ESP32-C3 running `esp32_bridge.ino` — a self-hosted WiFi access point (SSID `ExoHand_Live`) plus a WebSocket server (port 81) that relays serial lines from the Teensy straight to a connected browser. `ExoHand_ESP32.ino`/`ExoHand_ServoTest.ino` are separate servo-test sketches for the ESP32/Teensy side, not the telemetry bridge itself.
 - **Power:** 7.4V 2S LiPo, stepped down for servo and logic rails (per project README notes)
 
 ## VR integration
 
-A VR integration goal is part of the project's stated direction, but no VR-specific code was found in the files reviewed here. Treat this as a future goal, not a built feature.
+A VR integration goal is part of the project's stated direction, but no VR-specific code was found in the files reviewed here. Treat this as a future goal, not a built feature. (Note: `website.html` does include a camera-based "placement" assistant using MediaPipe FaceMesh — a 2D face-landmark guide, likely for sensor placement on the arm/face via webcam. This is AR-adjacent tooling, not a VR integration, and is unrelated to the stated VR goal.)
 
 ## Signal processing pipeline (current, on team-collected + benchmark data)
 
