@@ -4,7 +4,7 @@ EMG-controlled assistive robotic hand. Built for ECTE351 by Team Orvyn (Group 19
 
 ## Overview
 
-ExoHand reads surface EMG (sEMG) from the forearm, classifies the muscle activity into a hand gesture, and drives four servo-actuated fingers to match. The current system recognizes `rest`, `fist`, and individual-finger gestures (`pinky&ring`, `middle`, `index`, `thumb`), running the trained classifier directly on the microcontroller. A VR integration is a stated goal for the project but isn't implemented in the code found here — see `docs/architecture.md`.
+ExoHand reads surface EMG (sEMG) from the forearm, classifies the muscle activity into a hand gesture, and drives four servo-actuated fingers to match. The current system recognizes `rest`, `fist`, and individual-finger gestures (`pinky&ring`, `middle`, `index`, `thumb`), running the trained classifier directly on the microcontroller. VR integration is planned; not yet in this codebase. — see `docs/architecture.md`. Runs the trained classifier on-device (no PC needed for inference).
 
 ## EMG-control concept
 
@@ -18,7 +18,7 @@ Full signal-flow diagram: `docs/architecture.md`.
 
 ## Hardware stack
 
-- Teensy (4.0 per the main firmware; 4.1 per the dashboard backend — both appear in the project files, kept as found)
+- Teensy 4.0 (main firmware). The dashboard backend references 4.1; project standardized on 4.0.
 - PCA9685 servo driver (I2C, 4 channels)
 - MG996R servos (or equivalent)
 - SEN0240 EMG sensor
