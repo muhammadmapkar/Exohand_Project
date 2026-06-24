@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+websockets
+pyserial
+numpy
+pandas
+scikit-learn
+joblib
+jinja2
