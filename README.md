@@ -40,7 +40,7 @@ Nothing failed or superseded was deleted — old firmware versions, every dated 
 
 ## How to build / run
 
-**Firmware:** open `firmware/current/ExoHand_Teensy.ino` in Arduino IDE with Teensyduino, plus the Adafruit PWM Servo Driver library. Note: this sketch includes `ai_classifier_model.h`, which is not present in this repo — it needs to be regenerated from `signal-processing/ExoHand_RF_Model.joblib` (a standard sklearn-Random-Forest-to-C-array conversion) before it will compile. See `docs/build-log.md` for why.
+**Firmware:** open `firmware/current/teensy_final.ino` in Arduino IDE with Teensyduino (board: Teensy 4.0), plus the Adafruit PWM Servo Driver and Watchdog_t4 libraries. It includes `ai_classifier_model.h`, which is checked into `firmware/current/` and compiles as-is. To regenerate it from a retrained model, run `python3 signal-processing/export_model_to_header.py` (loads `ExoHand_RF_Model.joblib` + `ExoHand_Scaler.joblib`, writes the header back to `firmware/current/ai_classifier_model.h`).
 
 **Signal processing / training:** `pip install -r signal-processing/requirements.txt`, then `signal-processing/ExoHand_EMG_Classifier_RF_V2.ipynb` to retrain, or `signal-processing/live_predict.py` to run live PC-side inference over serial.
 
